@@ -1,4 +1,4 @@
-name: Build AAB from ZIP
+Build AAB from ZIP
 on:
   push:
     branches: [main]
@@ -37,4 +37,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Indori-Festival-App-AAB
-          path: android/app/build/outputs/bundle/release/*.aab
+          path: android/app/build/outputs/bundle/release/*.aa
