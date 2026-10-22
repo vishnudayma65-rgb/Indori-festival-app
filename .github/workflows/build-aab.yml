@@ -11,8 +11,25 @@ jobs:
       - name: Unzip project
         run: |
           ZIPFILE=$(ls *.zip | head -n 1)
+          echo "Found zip: $ZIPFILE"
           unzip -o "$ZIPFILE"
           rm -f "$ZIPFILE"
+          ls -la
+          # If zip made a single folder, bring files out
+          if [ -f "package.json" ]; then
+            echo "package.json found in root"
+          else
+            echo "Searching for package.json"
+            FOUND=$(find . -name "package.json" -type f | head -n 1)
+            echo "Found at: $FOUND"
+            if [ ! -z "$FOUND" ]; then
+              DIR=$(dirname "$FOUND")
+              echo "Moving files from $DIR"
+              cp -r $DIR/* . || true
+              cp -r $DIR/.* . 2>/dev/null || true
+            fi
+          fi
+          ls -la
       - uses: actions/setup-node@v4
         with:
           node-version: 20
