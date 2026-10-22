@@ -11,25 +11,13 @@ jobs:
       - name: Unzip project
         run: |
           ZIPFILE=$(ls *.zip | head -n 1)
-          echo "Found zip: $ZIPFILE"
           unzip -o "$ZIPFILE"
           rm -f "$ZIPFILE"
-          ls -la
-          # If zip made a single folder, bring files out
-          if [ -f "package.json" ]; then
-            echo "package.json found in root"
-          else
-            echo "Searching for package.json"
-            FOUND=$(find . -name "package.json" -type f | head -n 1)
-            echo "Found at: $FOUND"
-            if [ ! -z "$FOUND" ]; then
-              DIR=$(dirname "$FOUND")
-              echo "Moving files from $DIR"
-              cp -r $DIR/* . || true
-              cp -r $DIR/.* . 2>/dev/null || true
-            fi
+          if [ ! -f "package.json" ]; then
+            FOUND=$(find . -name "package.json" | head -n 1)
+            DIR=$(dirname "$FOUND")
+            cp -r $DIR/* . || true
           fi
-          ls -la
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -37,7 +25,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - run: npm install
+      - name: Fix npm and install
+        run: |
+          npm cache clean --force
+          rm -rf package-lock.json node_modules
+          npm install --legacy-peer-deps
       - run: npm run build
       - run: npx cap add android || true
       - run: npx cap sync android
