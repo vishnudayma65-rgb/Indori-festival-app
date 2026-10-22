@@ -37,4 +37,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Indori-Festival-App-AAB
-          path: android/app/build/outputs/bundle/release/*.aa
+          path: android/app/build/outputs/bundle/release/*.aab from ZIP
